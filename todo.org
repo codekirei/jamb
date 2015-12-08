@@ -1,4 +1,4 @@
-- [ ] ES6 (babel)
+- [ ] ES6
 - [ ] async
 - [ ] configuration
 - [ ] test

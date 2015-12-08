@@ -4,14 +4,20 @@
   "description": "jade and markdown blog",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "",
+    "dev": "find index.js test/*.js | entr -c node test/test.js"
   },
   "author": "Jacob Blakely (codekirei)",
   "license": "MIT",
   "dependencies": {
-    "front-matter": "^2.0.1",
+    "bluebird": "^3.0.6",
+    "co": "^4.6.0",
     "fs-extra": "^0.26.2",
+    "globby": "^4.0.0",
     "jade": "^1.11.0",
     "markdown-it": "^5.0.2"
+  },
+  "devDependencies": {
+    "nodemon": "^1.8.1"
   }
 }

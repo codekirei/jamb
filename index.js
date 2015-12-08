@@ -7,80 +7,108 @@
 const p = require('path')
 
 // npm
+const P = require('bluebird')
 const fs = require('fs-extra')
-const fm = require('front-matter')
 const md = require('markdown-it')()
 const jade = require('jade')
+const globby = require('globby')
+const co = require('co')
+
+// promisification
+const read = P.promisify(fs.readFile)
+const write = P.promisify(fs.outputFile)
 
 //----------------------------------------------------------
 // logic
 //----------------------------------------------------------
-const jadeOpts = {
-  basedir: './src/templates',
-  pretty: true
-}
-
-function split(obj) {
-  const indicator = '\n--MORE--\n'
-  if (obj.body.includes(indicator)) {
-    const strings = obj.body.split(indicator)
-    obj.preview = strings[0]
-    obj.body = strings[1]
-    return obj
+module.exports = class Jamb {
+  constructor(cfg) {
+    // default template
+    // jade opts
+    // markdown-it opts
+    // return co(this.content(cfg.content))
+    return co(
+      function* () {
+        return yield this.content(cfg.content)
+      }.bind(this)
+    ).catch(err => {
+      console.log(err.stack)
+      throw new Error(err)
+    })
   }
-  return obj
-}
-
-function renderMd(obj) {
-  if (obj.preview) obj.preview = md.render(obj.preview).trim()
-  obj.body = md.render(obj.body).trim()
-  return obj
-}
-
-function unwrapAttrs(obj) {
-  Object.keys(obj.attributes).map(key => {
-    obj[key] = obj.attributes[key]
-  })
-  delete obj.attributes
-  return obj
-}
-
-function groupByTemplate(accum, obj) {
-  const template = obj.template || 'page'
-  if (obj.template) delete obj.template
-  accum[template]
-    ? accum[template].push(obj)
-    : accum[template] = [obj]
-  return accum
-}
-
-function getContent(dir) {
-  return fs.readdirSync(dir)
-    .filter(path => p.extname(path) === '.md')
-    .map(path => fs.readFileSync(p.join(dir, path), 'utf8'))
-    .map(fm)
-    .map(split)
-    .map(renderMd)
-    .map(unwrapAttrs)
-}
-
-function getContentByTemplate(dir) {
-  return getContent(dir)
-    .reduce(groupByTemplate, {})
-}
-
-function merge(obj1, obj2) {
-  Object.keys(obj2).map(key => {
-    obj1[key]
-      ? obj2[key].map(obj => obj1[key].push(obj))
-      : obj1[key] = obj2[key]
-  })
-  return obj1
-}
-
-function toTemplatesObj(accum, pair) {
-  accum[pair[0]] = pair[1]
-  return accum
+  /**
+    Split data.body by preview separator.
+    @param {Object} data - data object
+    @returns {Object} data object
+   */
+  preview(data) {
+    if (data.body.includes(this.previewSep)) {
+      const split = data.body.split(this.previewSep)
+      data.preview = split[0]
+      data.body = split[1]
+      return data
+    }
+    return data
+  }
+  /**
+    Render markdown data fields.
+    @param {Object} data - data object
+    @returns {Object} data object
+   */
+  markdown(data) {
+    Array.from('preview', 'body').map(key => {
+      if (data[key]) data[key] = md.render(data[key]).trim()
+    })
+    return data
+  }
+  /**
+    Shallow merge two objects with array values.
+    @param {Object} to - merge to
+    @param {Object} from - merge from
+    @returns {Object} merged object
+   */
+  merge(to, from) {
+    Object.keys(from).map(key =>
+      to[key]
+        ? from[key].map(data => to[key].push(data))
+        : to[key] = from[key]
+    )
+    return to
+  }
+  // TODO
+  frontmatter() {}
+  // TODO - JSDOC
+  * content(glob, opts) {
+    const paths = yield globby(glob, opts)
+    const raws = yield P.all(paths.map(path => read(path, 'utf8')))
+    return raws
+    // return P.all(globby(glob, opts)
+    //   .then(res => res.map(path => read(path, 'utf8'))))
+        // .map(this.frontmatter)
+        // .map(this.preview)
+        // .map(this.markdown)
+    // )
+  }
+  /**
+    Sort and group data by template.
+    @param {Object[]} arrOfData - array of data objects
+    @returns {Object} object with template keys and data array values
+   */
+  group(arrOfData) {
+    return arrOfData.reduce((accum, data) => {
+      const template = data.template || this.defaultTemplate
+      if (data.template) delete data.template
+      accum[template]
+        ? accum[template].push(data)
+        : accum[template] = [data]
+      return accum
+    }, {})
+  }
+  templates(glob, opts) {
+    return globby(glob, opts).then(res => res
+      .map
+    )
+  }
 }
 
 function getTemplates(dir) {
@@ -92,39 +120,70 @@ function getTemplates(dir) {
     .reduce(toTemplatesObj, {})
 }
 
-function render(content, posts, templates) {
-  const pages = {}
-  Object.keys(content).map(template => {
-    content[template].map(data => {
-      data.posts = posts
-      pages[data.url] = templates[template]({data})
-    })
+const jadeOpts = {
+  basedir: './src/templates',
+  pretty: true
+}
+
+// shouldn't need this -> use custom front-matter parser with js-yaml
+function unwrapAttrs(obj) {
+  Object.keys(obj.attributes).map(key => {
+    obj[key] = obj.attributes[key]
   })
-  return pages
+  delete obj.attributes
+  return obj
 }
 
-function write(html) {
-  return Object.keys(html).map(url => {
-    const path = url === 'index'
-      ? `${url}.html`
-      : `${url}${p.sep}index.html`
-    fs.outputFileSync(p.join('dist', path), html[url])
-  })
-}
+// function getContent(dir) {
+//   return fs.readdirSync(dir)
+//     .filter(path => p.extname(path) === '.md')
+//     .map(path => fs.readFileSync(p.join(dir, path), 'utf8'))
+//     .map(fm)
+//     .map(split)
+//     .map(renderMd)
+//     .map(unwrapAttrs)
+// }
 
-function blog(cb) {
-  const content = merge(
-    getContentByTemplate('src/content'),
-    getContentByTemplate('src/content/posts')
-  )
-  const posts = getContent('src/content/posts')
-  const templates = getTemplates('src/templates')
-  const html = render(content, posts, templates)
-  write(html)
-  return cb()
-}
+// function getContentByTemplate(dir) {
+//   return getContent(dir)
+//     .reduce(groupByTemplate, {})
+// }
 
-//----------------------------------------------------------
-// exports
-//----------------------------------------------------------
-module.exports = blog
+// -- TODO --
+
+// function toTemplatesObj(accum, pair) {
+//   accum[pair[0]] = pair[1]
+//   return accum
+// }
+
+// function render(content, posts, templates) {
+//   const pages = {}
+//   Object.keys(content).map(template => {
+//     content[template].map(data => {
+//       data.posts = posts
+//       pages[data.url] = templates[template]({data})
+//     })
+//   })
+//   return pages
+// }
+
+// function write(html) {
+//   return Object.keys(html).map(url => {
+//     const path = url === 'index'
+//       ? `${url}.html`
+//       : `${url}${p.sep}index.html`
+//     fs.outputFileSync(p.join('dist', path), html[url])
+//   })
+// }
+
+// function blog(cb) {
+//   const content = merge(
+//     getContentByTemplate('src/content'),
+//     getContentByTemplate('src/content/posts')
+//   )
+//   const posts = getContent('src/content/posts')
+//   const templates = getTemplates('src/templates')
+//   const html = render(content, posts, templates)
+//   write(html)
+//   return cb()
+// }
