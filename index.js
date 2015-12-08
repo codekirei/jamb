@@ -32,10 +32,9 @@ module.exports = class Jamb {
         basedir: './test/fixtures/templates',
         pretty: true
       }
+      // TODO globby opts?
+      // TODO markdown-it opts?
     }
-    // globby opts
-    // jade opts
-    // markdown-it opts
     return co(
       function* () {
         const posts = yield this.content(cfg.posts)
@@ -44,8 +43,10 @@ module.exports = class Jamb {
           this.sort(posts)
         )
         const templates = yield this.templates(cfg.templates)
+        const html = this.render(content, posts, templates)
         // return content
-        return templates
+        // return templates
+        // return this.render(content, posts, templates)
       }.bind(this)
     ).catch(err => {
       console.log(err.stack)
@@ -141,6 +142,7 @@ module.exports = class Jamb {
   //----------------------------------------------------------
   // template fns
   //----------------------------------------------------------
+  // TODO jsdoc
   * templates(glob) {
     const paths = yield globby(glob)
     return yield P.all(paths.map(path => read(path, 'utf8')))
@@ -150,18 +152,19 @@ module.exports = class Jamb {
         return accum
       }, {})
   }
-}
 
-// function render(content, posts, templates) {
-//   const pages = {}
-//   Object.keys(content).map(template => {
-//     content[template].map(data => {
-//       data.posts = posts
-//       pages[data.url] = templates[template]({data})
-//     })
-//   })
-//   return pages
-// }
+  // TODO jsdoc
+  render(content, posts, templates) {
+    const html = {}
+    Object.keys(content).map(template => {
+      content[template].map(data => {
+        data.posts = posts
+        html[data.url] = templates[template]({data})
+      })
+    })
+    return html
+  }
+}
 
 // function write(html) {
 //   return Object.keys(html).map(url => {
