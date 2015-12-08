@@ -27,6 +27,12 @@ module.exports = class Jamb {
     this._previewDelim = '--MORE--'
     this._yamlDelim = '---'
     this._defaultTemplate = 'page'
+    this._opts = {
+      jade: {
+        basedir: './test/fixtures/templates',
+        pretty: true
+      }
+    }
     // globby opts
     // jade opts
     // markdown-it opts
@@ -37,8 +43,9 @@ module.exports = class Jamb {
           this.sort(yield this.content(cfg.pages)),
           this.sort(posts)
         )
-        // const templates = this
-        return content
+        const templates = yield this.templates(cfg.templates)
+        // return content
+        return templates
       }.bind(this)
     ).catch(err => {
       console.log(err.stack)
@@ -80,19 +87,13 @@ module.exports = class Jamb {
     }, {})
   }
 
-  * read(glob) {
-    const paths = yield globby(glob)
-    return yield P.all(paths.map(path => read(path, 'utf8')))
-
-  }
-
   //----------------------------------------------------------
   // content fns
   //----------------------------------------------------------
   // TODO - JSDOC
   * content(glob) {
-    const rawStrings = yield this.read(glob)
-    return rawStrings
+    const paths = yield globby(glob)
+    return yield P.all(paths.map(path => read(path, 'utf8')))
       .map(strings => this.frontmatter(strings))
       .map(obj => this.preview(obj))
       .map(obj => this.markdown(obj))
@@ -141,44 +142,15 @@ module.exports = class Jamb {
   // template fns
   //----------------------------------------------------------
   * templates(glob) {
-    const rawStrings = yield this.read(glob)
-    return rawStrings
+    const paths = yield globby(glob)
+    return yield P.all(paths.map(path => read(path, 'utf8')))
+      .map(string => jade.compile(string, this._opts.jade))
+      .reduce((accum, fn, i) => {
+        accum[p.basename(paths[i], '.jade')] = fn
+        return accum
+      }, {})
   }
 }
-
-function getTemplates(dir) {
-  return fs.readdirSync(dir)
-    .filter(path => p.extname(path) === '.jade')
-    .map(path => [p.basename(path, '.jade'), p.join(dir, path)])
-    .map(_ => [_[0], fs.readFileSync(_[1], 'utf8')])
-    .map(_ => [_[0], jade.compile(_[1], jadeOpts)])
-    .reduce(toTemplatesObj, {})
-}
-
-const jadeOpts = {
-  basedir: './src/templates',
-  pretty: true
-}
-
-// function getContent(dir) {
-//   return fs.readdirSync(dir)
-//     .filter(path => p.extname(path) === '.md')
-//     .map(path => fs.readFileSync(p.join(dir, path), 'utf8'))
-//     .map(fm)
-//     .map(split)
-//     .map(renderMd)
-//     .map(unwrapAttrs)
-// }
-
-// function getContentByTemplate(dir) {
-//   return getContent(dir)
-//     .reduce(groupByTemplate, {})
-// }
-
-// function toTemplatesObj(accum, pair) {
-//   accum[pair[0]] = pair[1]
-//   return accum
-// }
 
 // function render(content, posts, templates) {
 //   const pages = {}
