@@ -27,6 +27,7 @@ module.exports = class Jamb {
     this._previewDelim = '--MORE--'
     this._yamlDelim = '---'
     this._defaultTemplate = 'page'
+    // globby opts
     // jade opts
     // markdown-it opts
     return co(
@@ -79,14 +80,19 @@ module.exports = class Jamb {
     }, {})
   }
 
+  * read(glob) {
+    const paths = yield globby(glob)
+    return yield P.all(paths.map(path => read(path, 'utf8')))
+
+  }
+
   //----------------------------------------------------------
   // content fns
   //----------------------------------------------------------
   // TODO - JSDOC
-  * content(glob, opts) {
-    const paths = yield globby(glob, opts)
-    const raws = yield P.all(paths.map(path => read(path, 'utf8')))
-    return raws
+  * content(glob) {
+    const rawStrings = yield this.read(glob)
+    return rawStrings
       .map(strings => this.frontmatter(strings))
       .map(obj => this.preview(obj))
       .map(obj => this.markdown(obj))
@@ -131,10 +137,12 @@ module.exports = class Jamb {
     return data
   }
 
-  templates(glob, opts) {
-    return globby(glob, opts).then(res => res
-      .map
-    )
+  //----------------------------------------------------------
+  // template fns
+  //----------------------------------------------------------
+  * templates(glob) {
+    const rawStrings = yield this.read(glob)
+    return rawStrings
   }
 }
 
@@ -152,15 +160,6 @@ const jadeOpts = {
   pretty: true
 }
 
-// shouldn't need this -> use custom front-matter parser with js-yaml
-function unwrapAttrs(obj) {
-  Object.keys(obj.attributes).map(key => {
-    obj[key] = obj.attributes[key]
-  })
-  delete obj.attributes
-  return obj
-}
-
 // function getContent(dir) {
 //   return fs.readdirSync(dir)
 //     .filter(path => p.extname(path) === '.md')
@@ -175,8 +174,6 @@ function unwrapAttrs(obj) {
 //   return getContent(dir)
 //     .reduce(groupByTemplate, {})
 // }
-
-// -- TODO --
 
 // function toTemplatesObj(accum, pair) {
 //   accum[pair[0]] = pair[1]
