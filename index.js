@@ -13,6 +13,7 @@ const md = require('markdown-it')()
 const jade = require('jade')
 const globby = require('globby')
 const co = require('co')
+const yaml = require('js-yaml')
 
 // promisification
 const read = P.promisify(fs.readFile)
@@ -25,6 +26,7 @@ module.exports = class Jamb {
   constructor(cfg) {
     // default template
     // jade opts
+    // frontmatter delimiter
     // markdown-it opts
     // return co(this.content(cfg.content))
     return co(
@@ -75,13 +77,24 @@ module.exports = class Jamb {
     )
     return to
   }
-  // TODO
-  frontmatter() {}
+  /**
+    Parse YAML frontmatter.
+    @param {String} rawString - raw string from file
+    @returns {Object} object with frontmatter and content
+   */
+  frontmatter(rawString) {
+    const strings = rawString.split('---')
+    const dataObj = yaml.load(strings[1])
+    dataObj.content = strings.slice(2).join('---')
+    return dataObj
+  }
   // TODO - JSDOC
   * content(glob, opts) {
     const paths = yield globby(glob, opts)
     const raws = yield P.all(paths.map(path => read(path, 'utf8')))
-    return raws
+    return raws.map(this.frontmatter)
+    // return raws
+    //   .map(this)
     // return P.all(globby(glob, opts)
     //   .then(res => res.map(path => read(path, 'utf8'))))
         // .map(this.frontmatter)
@@ -91,11 +104,11 @@ module.exports = class Jamb {
   }
   /**
     Sort and group data by template.
-    @param {Object[]} arrOfData - array of data objects
+    @param {Object[]} dataArr - array of data objects
     @returns {Object} object with template keys and data array values
    */
-  group(arrOfData) {
-    return arrOfData.reduce((accum, data) => {
+  group(dataArr) {
+    return dataArr.reduce((accum, data) => {
       const template = data.template || this.defaultTemplate
       if (data.template) delete data.template
       accum[template]
