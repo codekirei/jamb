@@ -1,0 +1,7 @@
+- [ ] ES6 (babel)
+- [ ] async
+- [ ] configuration
+- [ ] test
+- [ ] travis + coveralls
+- [ ] readme
+- [ ] NPM
