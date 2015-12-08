@@ -2,5 +2,9 @@
 
 const Jamb = require('../')
 
-new Jamb({content: 'test/fixtures/content/**/*.md'})
+const cfg = {
+  pages: 'test/fixtures/content/*.md',
+  posts: 'test/fixtures/content/posts/*.md'
+}
+new Jamb(cfg)
   .then(console.log)

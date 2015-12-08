@@ -24,45 +24,30 @@ const write = P.promisify(fs.outputFile)
 //----------------------------------------------------------
 module.exports = class Jamb {
   constructor(cfg) {
-    // default template
+    this._previewDelim = '--MORE--'
+    this._yamlDelim = '---'
+    this._defaultTemplate = 'page'
     // jade opts
-    // frontmatter delimiter
     // markdown-it opts
-    // return co(this.content(cfg.content))
     return co(
       function* () {
-        return yield this.content(cfg.content)
+        const posts = yield this.content(cfg.posts)
+        const content = this.merge(
+          this.sort(yield this.content(cfg.pages)),
+          this.sort(posts)
+        )
+        // const templates = this
+        return content
       }.bind(this)
     ).catch(err => {
       console.log(err.stack)
       throw new Error(err)
     })
   }
-  /**
-    Split data.body by preview separator.
-    @param {Object} data - data object
-    @returns {Object} data object
-   */
-  preview(data) {
-    if (data.body.includes(this.previewSep)) {
-      const split = data.body.split(this.previewSep)
-      data.preview = split[0]
-      data.body = split[1]
-      return data
-    }
-    return data
-  }
-  /**
-    Render markdown data fields.
-    @param {Object} data - data object
-    @returns {Object} data object
-   */
-  markdown(data) {
-    Array.from('preview', 'body').map(key => {
-      if (data[key]) data[key] = md.render(data[key]).trim()
-    })
-    return data
-  }
+
+  //----------------------------------------------------------
+  // util fns
+  //----------------------------------------------------------
   /**
     Shallow merge two objects with array values.
     @param {Object} to - merge to
@@ -77,39 +62,15 @@ module.exports = class Jamb {
     )
     return to
   }
+
   /**
-    Parse YAML frontmatter.
-    @param {String} rawString - raw string from file
-    @returns {Object} object with frontmatter and content
-   */
-  frontmatter(rawString) {
-    const strings = rawString.split('---')
-    const dataObj = yaml.load(strings[1])
-    dataObj.content = strings.slice(2).join('---')
-    return dataObj
-  }
-  // TODO - JSDOC
-  * content(glob, opts) {
-    const paths = yield globby(glob, opts)
-    const raws = yield P.all(paths.map(path => read(path, 'utf8')))
-    return raws.map(this.frontmatter)
-    // return raws
-    //   .map(this)
-    // return P.all(globby(glob, opts)
-    //   .then(res => res.map(path => read(path, 'utf8'))))
-        // .map(this.frontmatter)
-        // .map(this.preview)
-        // .map(this.markdown)
-    // )
-  }
-  /**
-    Sort and group data by template.
+    Sort data by template.
     @param {Object[]} dataArr - array of data objects
     @returns {Object} object with template keys and data array values
    */
-  group(dataArr) {
+  sort(dataArr) {
     return dataArr.reduce((accum, data) => {
-      const template = data.template || this.defaultTemplate
+      const template = data.template || this._defaultTemplate
       if (data.template) delete data.template
       accum[template]
         ? accum[template].push(data)
@@ -117,6 +78,59 @@ module.exports = class Jamb {
       return accum
     }, {})
   }
+
+  //----------------------------------------------------------
+  // content fns
+  //----------------------------------------------------------
+  // TODO - JSDOC
+  * content(glob, opts) {
+    const paths = yield globby(glob, opts)
+    const raws = yield P.all(paths.map(path => read(path, 'utf8')))
+    return raws
+      .map(strings => this.frontmatter(strings))
+      .map(obj => this.preview(obj))
+      .map(obj => this.markdown(obj))
+  }
+
+  /**
+    Parse YAML frontmatter.
+    @param {String} rawString - raw string from file
+    @returns {Object} object with frontmatter and content
+   */
+  frontmatter(rawString) {
+    const strings = rawString.split(this._yamlDelim)
+    const dataObj = yaml.load(strings[1])
+    dataObj.content = strings.slice(2).join(this._yamlDelim)
+    return dataObj
+  }
+
+  /**
+    Split content by preview separator.
+    @param {Object} data - data object
+    @returns {Object} data object
+   */
+  preview(data) {
+    if (data.content.includes(this._previewDelim)) {
+      const halves = data.content.split(this._previewDelim)
+      data.preview = halves[0]
+      data.content = halves[1]
+      return data
+    }
+    return data
+  }
+
+  /**
+    Render markdown data fields.
+    @param {Object} data - data object
+    @returns {Object} data object
+   */
+  markdown(data) {
+    ['preview', 'content'].map(field => {
+      if (data[field]) data[field] = md.render(data[field]).trim()
+    })
+    return data
+  }
+
   templates(glob, opts) {
     return globby(glob, opts).then(res => res
       .map
