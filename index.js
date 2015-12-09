@@ -36,6 +36,7 @@ module.exports = class Jamb {
         // TODO globby opts?
         // TODO markdown-it opts?
       }
+
     return co(
       function* () {
         const posts = yield this.content(cfg.posts)
@@ -55,7 +56,7 @@ module.exports = class Jamb {
   }
 
   //----------------------------------------------------------
-  // util fns
+  // util methods
   //----------------------------------------------------------
   /**
     Shallow merge two objects with array values.
@@ -64,10 +65,9 @@ module.exports = class Jamb {
     @returns {Object} merged object
    */
   merge(to, from) {
-    Object.keys(from).map(key =>
-      to[key]
-        ? from[key].map(data => to[key].push(data))
-        : to[key] = from[key]
+    Object.keys(from).map(key => to[key]
+      ? from[key].map(data => to[key].push(data))
+      : to[key] = from[key]
     )
     return to
   }
@@ -80,7 +80,6 @@ module.exports = class Jamb {
   sort(dataArr) {
     return dataArr.reduce((accum, data) => {
       const template = data.template || this._defaultTemplate
-      if (data.template) delete data.template
       accum[template]
         ? accum[template].push(data)
         : accum[template] = [data]
@@ -97,13 +96,13 @@ module.exports = class Jamb {
 
   // TODO jsdoc
   write(out) {
-    return Object.keys(out).map(page => {
-      return write(p.join(this._dist, this.url(page)), out[page])
-    })
+    return Object.keys(out).map(page =>
+      write(p.join(this._dist, this.url(page)), out[page])
+    )
   }
 
   //----------------------------------------------------------
-  // content fns
+  // content methods
   //----------------------------------------------------------
   // TODO - JSDOC
   * content(glob) {
@@ -154,7 +153,7 @@ module.exports = class Jamb {
   }
 
   //----------------------------------------------------------
-  // template fns
+  // template methods
   //----------------------------------------------------------
   // TODO jsdoc
   * templates(glob) {
