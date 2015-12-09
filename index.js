@@ -27,14 +27,15 @@ module.exports = class Jamb {
     this._previewDelim = '--MORE--'
     this._yamlDelim = '---'
     this._defaultTemplate = 'page'
-    this._opts = {
-      jade: {
-        basedir: './test/fixtures/templates',
-        pretty: true
+    this._dist = cfg.dist
+    this._opts =
+      { jade:
+        { basedir: './test/fixtures/templates'
+        , pretty: true
+        }
+        // TODO globby opts?
+        // TODO markdown-it opts?
       }
-      // TODO globby opts?
-      // TODO markdown-it opts?
-    }
     return co(
       function* () {
         const posts = yield this.content(cfg.posts)
@@ -44,9 +45,8 @@ module.exports = class Jamb {
         )
         const templates = yield this.templates(cfg.templates)
         const html = this.render(content, posts, templates)
-        // return content
-        // return templates
-        // return this.render(content, posts, templates)
+        yield this.write(html)
+        return Object.keys(html).map(this.url)
       }.bind(this)
     ).catch(err => {
       console.log(err.stack)
@@ -86,6 +86,20 @@ module.exports = class Jamb {
         : accum[template] = [data]
       return accum
     }, {})
+  }
+
+  // TODO jsdoc
+  url(page) {
+    return page === 'index'
+      ? `${page}.html`
+      : `${page}${p.sep}index.html`
+  }
+
+  // TODO jsdoc
+  write(out) {
+    return Object.keys(out).map(page => {
+      return write(p.join(this._dist, this.url(page)), out[page])
+    })
   }
 
   //----------------------------------------------------------
@@ -165,24 +179,3 @@ module.exports = class Jamb {
     return html
   }
 }
-
-// function write(html) {
-//   return Object.keys(html).map(url => {
-//     const path = url === 'index'
-//       ? `${url}.html`
-//       : `${url}${p.sep}index.html`
-//     fs.outputFileSync(p.join('dist', path), html[url])
-//   })
-// }
-
-// function blog(cb) {
-//   const content = merge(
-//     getContentByTemplate('src/content'),
-//     getContentByTemplate('src/content/posts')
-//   )
-//   const posts = getContent('src/content/posts')
-//   const templates = getTemplates('src/templates')
-//   const html = render(content, posts, templates)
-//   write(html)
-//   return cb()
-// }
