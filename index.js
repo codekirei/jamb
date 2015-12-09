@@ -14,6 +14,7 @@ const jade = require('jade')
 const globby = require('globby')
 const co = require('co')
 const yaml = require('js-yaml')
+const typeset = require('typeset')
 
 // promisification
 const read = P.promisify(fs.readFile)
@@ -95,6 +96,14 @@ module.exports = class Jamb {
   }
 
   // TODO jsdoc
+  markup(data, cb) {
+    ['preview', 'content'].map(field => {
+      if (data[field]) data[field] = cb(data[field]).trim()
+    })
+    return data
+  }
+
+  // TODO jsdoc
   write(out) {
     return Object.keys(out).map(page =>
       write(p.join(this._dist, this.url(page)), out[page])
@@ -145,12 +154,7 @@ module.exports = class Jamb {
     @param {Object} data - data object
     @returns {Object} data object
    */
-  markdown(data) {
-    ['preview', 'content'].map(field => {
-      if (data[field]) data[field] = md.render(data[field]).trim()
-    })
-    return data
-  }
+  markdown(data) {return this.markup(data, val => md.render(val))}
 
   //----------------------------------------------------------
   // template methods

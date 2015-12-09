@@ -1,7 +1,6 @@
 - [ ] additional transform methods
   - [ ] sitemap.js
   - [ ] rss feed (diy)
-  - [ ] typeset.js
   - [ ] post estimated reading times
   - [ ] highlight.js
 - [ ] docstrings
