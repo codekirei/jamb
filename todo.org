@@ -1,12 +1,12 @@
 - [-] additional transform methods
   - [ ] sitemap.js
-  - [ ] rss feed (diy)
-  - [ ] post estimated reading times
+  - [X] post estimated reading times
   - [X] highlight.js
 - [ ] docstrings
 - [ ] configuration
 - [ ] test
-- [ ] searchable archive page / tags page
 - [ ] travis + coveralls
 - [ ] readme
 - [ ] NPM
+- [ ] searchable archive page / tags page
+- [ ] add rss feed

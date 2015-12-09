@@ -29,6 +29,7 @@ module.exports = class Jamb {
     this._yamlDelim = '---'
     this._defaultTemplate = 'page'
     this._dist = cfg.dist
+    this._wpm = 225
     this._opts =
       { jade:
         { basedir: './test/fixtures/templates'
@@ -40,7 +41,8 @@ module.exports = class Jamb {
 
     return co(
       function* () {
-        const posts = yield this.content(cfg.posts)
+        let posts = yield this.content(cfg.posts)
+        posts = this.ert(posts)
         const content = this.merge(
           this.sort(yield this.content(cfg.pages)),
           this.sort(posts)
@@ -141,9 +143,9 @@ module.exports = class Jamb {
    */
   preview(data) {
     if (data.content.includes(this._previewDelim)) {
-      const halves = data.content.split(this._previewDelim)
-      data.preview = halves[0]
-      data.content = halves[1]
+      const split = data.content.split(this._previewDelim)
+      data.preview = split[0]
+      data.content = split[1]
       return data
     }
     return data
@@ -155,6 +157,18 @@ module.exports = class Jamb {
     @returns {Object} data object
    */
   markdown(data) {return this.markup(data, val => md.render(val))}
+
+  /**
+    Generate estimated reading time from content wordcount.
+    @param {Object[]} posts - array of post objects
+    @returns {Object[]} mutated array of post objects
+   */
+  ert(posts) {
+    posts.map(post => {
+      post.ert = Math.ceil(post.content.split(" ").length / this._wpm)
+    })
+    return posts
+  }
 
   //----------------------------------------------------------
   // template methods
