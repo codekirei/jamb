@@ -1,8 +1,8 @@
-- [ ] additional transform methods
+- [-] additional transform methods
   - [ ] sitemap.js
   - [ ] rss feed (diy)
   - [ ] post estimated reading times
-  - [ ] highlight.js
+  - [X] highlight.js
 - [ ] docstrings
 - [ ] configuration
 - [ ] test

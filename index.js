@@ -10,11 +10,11 @@ const p = require('path')
 const P = require('bluebird')
 const fs = require('fs-extra')
 const md = require('markdown-it')()
+  .use(require('markdown-it-highlightjs'))
 const jade = require('jade')
 const globby = require('globby')
 const co = require('co')
 const yaml = require('js-yaml')
-const typeset = require('typeset')
 
 // promisification
 const read = P.promisify(fs.readFile)
@@ -96,9 +96,9 @@ module.exports = class Jamb {
   }
 
   // TODO jsdoc
-  markup(data, cb) {
+  markup(data, fn) {
     ['preview', 'content'].map(field => {
-      if (data[field]) data[field] = cb(data[field]).trim()
+      if (data[field]) data[field] = fn(data[field]).trim()
     })
     return data
   }
