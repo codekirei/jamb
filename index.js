@@ -16,9 +16,21 @@ const globby = require('globby')
 const co = require('co')
 const yaml = require('js-yaml')
 
+//----------------------------------------------------------
+// global constants
+//----------------------------------------------------------
+const enc = 'utf8'
+
+//----------------------------------------------------------
 // promisification
-const read = P.promisify(fs.readFile)
+//----------------------------------------------------------
+const read = path => P.promisify(fs.readFile)(path, enc)
 const write = P.promisify(fs.outputFile)
+
+//----------------------------------------------------------
+// shortcuts
+//----------------------------------------------------------
+const buf = str => new Buffer(str, enc)
 
 //----------------------------------------------------------
 // logic
@@ -50,15 +62,16 @@ module.exports = class Jamb {
 
   * main() {
     let posts = yield this.content(this._paths.posts)
-    posts = this.ert(posts)
-    const content = this.merge(
-      this.sort(yield this.content(this._paths.pages)),
-      this.sort(posts)
-    )
-    const templates = yield this.templates(this._paths.templates)
-    const html = this.render(content, posts, templates)
-    yield this.write(html)
-    return Object.keys(html).map(this.url)
+    console.log(posts)
+    // posts = this.ert(posts)
+    // const content = this.merge(
+    //   this.sort(yield this.content(this._paths.pages)),
+    //   this.sort(posts)
+    // )
+    // const templates = yield this.templates(this._paths.templates)
+    // const html = this.render(content, posts, templates)
+    // yield this.write(html)
+    // return Object.keys(html).map(this.url)
   }
 
   errs(err) {
@@ -69,20 +82,6 @@ module.exports = class Jamb {
   //----------------------------------------------------------
   // util methods
   //----------------------------------------------------------
-  /**
-    Shallow merge two objects with array values.
-    @param {Object} to - merge to
-    @param {Object} from - merge from
-    @returns {Object} merged object
-   */
-  merge(to, from) {
-    Object.keys(from).map(key => to[key]
-      ? from[key].map(data => to[key].push(data))
-      : to[key] = from[key]
-    )
-    return to
-  }
-
   /**
     Sort data by template.
     @param {Object[]} dataArr - array of data objects
@@ -99,19 +98,6 @@ module.exports = class Jamb {
   }
 
   // TODO jsdoc
-  url(page) {
-    return page === 'index'
-      ? `${page}.html`
-      : `${page}${p.sep}index.html`
-  }
-
-  // TODO jsdoc
-  markup(data, fn) {
-    ['preview', 'content'].map(field => {
-      if (data[field]) data[field] = fn(data[field]).trim()
-    })
-    return data
-  }
 
   // TODO jsdoc
   write(out) {
@@ -126,45 +112,12 @@ module.exports = class Jamb {
   // TODO - JSDOC
   * content(glob) {
     const paths = yield globby(glob)
-    return yield P.all(paths.map(path => read(path, 'utf8')))
-      .map(strings => this.frontmatter(strings))
-      .map(obj => this.preview(obj))
-      .map(obj => this.markdown(obj))
+    return yield P.all(paths.map(read))
+      .map(frontmatter(this._yamlDelim))
+      .map(preview(this._previewDelim))
+      .map(markdown)
+      .map(out)
   }
-
-  /**
-    Parse YAML frontmatter.
-    @param {String} rawString - raw string from file
-    @returns {Object} object with frontmatter and content
-   */
-  frontmatter(rawString) {
-    const strings = rawString.split(this._yamlDelim)
-    const dataObj = yaml.load(strings[1])
-    dataObj.content = strings.slice(2).join(this._yamlDelim)
-    return dataObj
-  }
-
-  /**
-    Split content by preview separator.
-    @param {Object} data - data object
-    @returns {Object} data object
-   */
-  preview(data) {
-    if (data.content.includes(this._previewDelim)) {
-      const split = data.content.split(this._previewDelim)
-      data.preview = split[0]
-      data.content = split[1]
-      return data
-    }
-    return data
-  }
-
-  /**
-    Render markdown data fields.
-    @param {Object} data - data object
-    @returns {Object} data object
-   */
-  markdown(data) {return this.markup(data, val => md.render(val))}
 
   /**
     Generate estimated reading time from content wordcount.
@@ -203,4 +156,62 @@ module.exports = class Jamb {
     })
     return html
   }
+}
+
+function frontmatter(delim) {
+  return function(string) {
+    const strings = string.split(delim)
+    const dataObj = yaml.load(strings[1])
+    dataObj.content = buf(strings.slice(2).join(delim))
+    return dataObj
+  }
+}
+
+function preview(delim) {
+  return function(data) {
+    const str = data.content.toString()
+    if (str.includes(delim)) {
+      const split = str.split(delim)
+      data.preview = buf(split[0])
+      data.content = buf(split[1])
+      return data
+    }
+    return data
+  }
+}
+
+/**
+  Shallow merge two objects with array values.
+  @param {Object} to - merge to
+  @param {Object} from - merge from
+  @returns {Object} merged object
+  */
+function shallowMerge(to, from) {
+  Object.keys(from).map(key => to[key]
+    ? from[key].map(data => to[key].push(data))
+    : to[key] = from[key]
+  )
+  return to
+}
+
+// TODO jsdoc
+function bufTransform(data, fn) {
+  ['preview', 'content'].map(key => {
+    if (data[key]) data[key] = buf(fn(data[key].toString()).trim())
+  })
+  return data
+}
+
+/**
+  Render markdown data fields.
+  @param {Object} data - data object
+  @returns {Object} data object
+  */
+const markdown = data => bufTransform(data, val => md.render(val))
+
+// TODO jsdoc
+function out(data) {
+  const url = data.url
+  data.out = url === 'index' ? `${url}.html` : `${url}${p.sep}index.html`
+  return data
 }
