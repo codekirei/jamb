@@ -8,12 +8,23 @@ const P = require('bluebird')
 const co = require('co')
 
 // local
-const transforms = require('./lib/transformers')
-const utils = require('./lib/utils')
-
-//----------------------------------------------------------
-// shortcuts
-//----------------------------------------------------------
+const u = require('./lib/utils')
+const binaryArrToObj = u.binaryArrToObj
+const errHandler     = u.errHandler
+const readContent    = u.readContent
+const readTemplates  = u.readTemplates
+const shallowMerge   = u.shallowMerge
+const writeObj       = u.writeObj
+const x = require('./lib/transformers')
+const compile         = x.compile
+const defaultTemplate = x.defaultTemplate
+const ert             = x.ert
+const frontmatter     = x.frontmatter
+const groupByTemplate = x.groupByTemplate
+const markdown        = x.markdown
+const outPath         = x.outPath
+const preview         = x.preview
+const render          = x.render
 
 //----------------------------------------------------------
 // logic
@@ -52,9 +63,13 @@ module.exports = class Jamb {
       groupByTemplate(pages),
       groupByTemplate(posts)
     )
+
     const templates = yield this.templates(this._paths.templates)
+
     const html = render(this._needPosts)(content, posts, templates)
+
     yield writeObj(html)
+
     return Object.keys(html)
   }
 
@@ -65,7 +80,7 @@ module.exports = class Jamb {
       .map(preview(this._previewDelim))
       .map(markdown)
       .map(defaultTemplate(this._defaultTemplate))
-      .map(out(this._paths.dist))
+      .map(outPath(this._paths.dist))
   }
 
   // TODO - jsdoc
