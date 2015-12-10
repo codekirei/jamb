@@ -41,6 +41,7 @@ module.exports = class Jamb {
     this._yamlDelim = '---'
     this._defaultTemplate = 'page'
     this._dist = cfg.dist
+    this._needPosts = ['index']
     this._wpm = 225
     this._paths =
       { pages: cfg.pages
@@ -57,32 +58,27 @@ module.exports = class Jamb {
         // TODO markdown-it opts?
       }
 
-    return co(() => this.main()).catch(this.errs)
+    return co(() => this.main()).catch(errHandler)
   }
 
+  // TODO - JSDOC
   * main() {
     const pages = yield this.pages(this._paths.pages)
     const posts = yield this.posts(this._paths.posts)
+    const templates = yield this.templates(this._paths.templates)
+
     const content = shallowMerge(
       groupByTemplate(pages),
       groupByTemplate(posts)
     )
-    console.log(content)
-    // const templates = yield this.templates(this._paths.templates)
     // const html = this.render(content, posts, templates)
     // yield this.write(html)
     // return Object.keys(html).map(this.url)
   }
 
-  errs(err) {
-    console.log(err.stack)
-    throw new Error(err)
-  }
-
   // TODO - JSDOC
-  * pages(glob, posts) {
-    const paths = yield globby(glob)
-    return yield P.all(paths.map(read))
+  * pages(glob) {
+    return P.resolve(yield readContent(glob))
       .map(frontmatter(this._yamlDelim))
       .map(preview(this._previewDelim))
       .map(markdown)
@@ -92,14 +88,17 @@ module.exports = class Jamb {
 
   // TODO - jsdoc
   * posts(glob) {
-    const posts = yield this.pages(glob)
-    return posts
+    return P.resolve(yield this.pages(glob))
       .map(ert(this._wpm))
   }
 
-  //----------------------------------------------------------
-  // util methods
-  //----------------------------------------------------------
+  // TODO jsdoc
+  * templates(glob) {
+    return P.resolve(yield readTemplates(glob))
+      .map(compile(this._opts.jade))
+      .reduce(binaryArrToObj, {})
+  }
+}
 
   // TODO jsdoc
   // write(out) {
@@ -108,33 +107,17 @@ module.exports = class Jamb {
   //   )
   // }
 
-
-  //----------------------------------------------------------
-  // template methods
-  //----------------------------------------------------------
   // TODO jsdoc
-  * templates(glob) {
-    const paths = yield globby(glob)
-    return yield P.all(paths.map(path => read(path, 'utf8')))
-      .map(string => jade.compile(string, this._opts.jade))
-      .reduce((accum, fn, i) => {
-        accum[p.basename(paths[i], '.jade')] = fn
-        return accum
-      }, {})
-  }
-
-  // TODO jsdoc
-  render(content, posts, templates) {
-    const html = {}
-    Object.keys(content).map(template => {
-      content[template].map(data => {
-        data.posts = posts
-        html[data.url] = templates[template]({data})
-      })
-    })
-    return html
-  }
-}
+  // render(content, posts, templates) {
+  //   const html = {}
+  //   Object.keys(content).map(template => {
+  //     content[template].map(data => {
+  //       data.posts = posts
+  //       html[data.url] = templates[template]({data})
+  //     })
+  //   })
+  //   return html
+  // }
 
 //----------------------------------------------------------
 // Util Fns
@@ -154,11 +137,46 @@ function shallowMerge(to, from) {
 }
 
 // TODO jsdoc
+function binaryArrToObj(accum, arr) {
+  accum[arr[0]] = arr[1]
+  return accum
+}
+
+// TODO jsdoc
 function bufTransform(data, fn) {
   ['preview', 'content'].map(key => {
     if (data[key]) data[key] = buf(fn(data[key].toString()).trim())
   })
   return data
+}
+
+// TODO jsdoc
+function* readContent(glob) {
+  const paths = yield globby(glob)
+  return yield paths.map(read)
+}
+
+function* readTemplates(glob) {
+  const paths = yield globby(glob)
+  const strs = yield paths.map(read)
+  return binaryArr(paths, strs)
+}
+
+const binaryArr = (a, b) => a.map((_a, i) => [_a, b[i]])
+
+/**
+  Restructure array of data objects by data.template.
+  @param {Object[]} dataArr - array of data objects
+  @returns {Object} object with template keys and data array values
+  */
+function groupByTemplate(dataArr) {
+  return dataArr.reduce((accum, data) => {
+    const template = data.template
+    accum[template]
+      ? accum[template].push(data)
+      : accum[template] = [data]
+    return accum
+  }, {})
 }
 
 //----------------------------------------------------------
@@ -221,17 +239,14 @@ function defaultTemplate(template) {
   }
 }
 
-/**
-  Restructure array of data objects by data.template.
-  @param {Object[]} dataArr - array of data objects
-  @returns {Object} object with template keys and data array values
-  */
-function groupByTemplate(dataArr) {
-  return dataArr.reduce((accum, data) => {
-    const template = data.template
-    accum[template]
-      ? accum[template].push(data)
-      : accum[template] = [data]
-    return accum
-  }, {})
-}
+// TODO jsdoc
+const base = path => p.basename(path, '.jade')
+
+// TODO jsdoc
+const compile = opts => arr => [base(arr[0]), jade.compile(arr[1], opts)]
+
+const errHandler = err => {console.log(err.stack); throw new Error(err)}
+  // errs(err) {
+  //   console.log(err.stack)
+  //   throw new Error(err)
+  // }
