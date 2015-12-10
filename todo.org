@@ -1,12 +1,14 @@
-- [-] additional transform methods
-  - [ ] sitemap.js
-  - [X] post estimated reading times
-  - [X] highlight.js
+- [ ] change syntax of util imports in transforms file
+- [ ] sitemap.js
 - [ ] docstrings
 - [ ] configuration
-- [ ] test
+
+- [ ] test (ava)
 - [ ] travis + coveralls
+
 - [ ] readme
 - [ ] NPM
+
+* Later
 - [ ] searchable archive page / tags page
 - [ ] add rss feed
