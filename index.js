@@ -17,20 +17,15 @@ const co = require('co')
 const yaml = require('js-yaml')
 
 //----------------------------------------------------------
-// global constants
-//----------------------------------------------------------
-const enc = 'utf8'
-
-//----------------------------------------------------------
 // promisification
 //----------------------------------------------------------
-const read = path => P.promisify(fs.readFile)(path, enc)
+const read = path => P.promisify(fs.readFile)(path, 'utf8')
 const write = P.promisify(fs.outputFile)
 
 //----------------------------------------------------------
 // shortcuts
 //----------------------------------------------------------
-const buf = str => new Buffer(str, enc)
+const buf = str => new Buffer(str, 'utf8')
 
 //----------------------------------------------------------
 // logic
@@ -65,15 +60,14 @@ module.exports = class Jamb {
   * main() {
     const pages = yield this.pages(this._paths.pages)
     const posts = yield this.posts(this._paths.posts)
-    const templates = yield this.templates(this._paths.templates)
-
     const content = shallowMerge(
       groupByTemplate(pages),
       groupByTemplate(posts)
     )
-    // const html = this.render(content, posts, templates)
-    // yield this.write(html)
-    // return Object.keys(html).map(this.url)
+    const templates = yield this.templates(this._paths.templates)
+    const html = render(this._needPosts)(content, posts, templates)
+    yield writeObj(html)
+    return Object.keys(html)
   }
 
   // TODO - JSDOC
@@ -100,24 +94,17 @@ module.exports = class Jamb {
   }
 }
 
-  // TODO jsdoc
-  // write(out) {
-  //   return Object.keys(out).map(page =>
-  //     write(p.join(this._dist, this.url(page)), out[page])
-  //   )
-  // }
-
-  // TODO jsdoc
-  // render(content, posts, templates) {
-  //   const html = {}
-  //   Object.keys(content).map(template => {
-  //     content[template].map(data => {
-  //       data.posts = posts
-  //       html[data.url] = templates[template]({data})
-  //     })
-  //   })
-  //   return html
-  // }
+// TODO jsdoc
+function render(need) {
+  return function(content, posts, templates) {
+    const html = {}
+    Object.keys(content).map(t => content[t].map(data => {
+      if (need.indexOf(t) > -1) data.posts = posts
+      html[data.out] = templates[t]({data})
+    }))
+    return html
+  }
+}
 
 //----------------------------------------------------------
 // Util Fns
@@ -141,6 +128,9 @@ function binaryArrToObj(accum, arr) {
   accum[arr[0]] = arr[1]
   return accum
 }
+
+// TODO jsdoc
+const writeObj = obj => Object.keys(obj).map(path => write(path, obj[path]))
 
 // TODO jsdoc
 function bufTransform(data, fn) {
@@ -250,3 +240,5 @@ const errHandler = err => {console.log(err.stack); throw new Error(err)}
   //   console.log(err.stack)
   //   throw new Error(err)
   // }
+
+// TODO jsdoc
