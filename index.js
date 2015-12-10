@@ -30,6 +30,12 @@ module.exports = class Jamb {
     this._defaultTemplate = 'page'
     this._dist = cfg.dist
     this._wpm = 225
+    this._paths =
+      { pages: cfg.pages
+      , posts: cfg.posts
+      , templates: cfg.templates
+      , dist: cfg.dist
+      }
     this._opts =
       { jade:
         { basedir: './test/fixtures/templates'
@@ -39,23 +45,25 @@ module.exports = class Jamb {
         // TODO markdown-it opts?
       }
 
-    return co(
-      function* () {
-        let posts = yield this.content(cfg.posts)
-        posts = this.ert(posts)
-        const content = this.merge(
-          this.sort(yield this.content(cfg.pages)),
-          this.sort(posts)
-        )
-        const templates = yield this.templates(cfg.templates)
-        const html = this.render(content, posts, templates)
-        yield this.write(html)
-        return Object.keys(html).map(this.url)
-      }.bind(this)
-    ).catch(err => {
-      console.log(err.stack)
-      throw new Error(err)
-    })
+    return co(() => this.main()).catch(this.errs)
+  }
+
+  * main() {
+    let posts = yield this.content(this._paths.posts)
+    posts = this.ert(posts)
+    const content = this.merge(
+      this.sort(yield this.content(this._paths.pages)),
+      this.sort(posts)
+    )
+    const templates = yield this.templates(this._paths.templates)
+    const html = this.render(content, posts, templates)
+    yield this.write(html)
+    return Object.keys(html).map(this.url)
+  }
+
+  errs(err) {
+    console.log(err.stack)
+    throw new Error(err)
   }
 
   //----------------------------------------------------------
@@ -165,7 +173,7 @@ module.exports = class Jamb {
    */
   ert(posts) {
     posts.map(post => {
-      post.ert = Math.ceil(post.content.split(" ").length / this._wpm)
+      post.ert = Math.ceil(post.content.split(' ').length / this._wpm)
     })
     return posts
   }
