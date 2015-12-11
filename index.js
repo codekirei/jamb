@@ -12,11 +12,12 @@ const co = require('co')
 
 // local
 const u = require('./lib/utils')
-const arToOb         = u.arToOb
+const arToOb = u.arToOb
 const errHandler     = u.errHandler
 const flatAr         = u.flatAr
 const flatOb         = u.flatOb
 const genSitemap     = u.genSitemap
+const obFrom2DAr     = u.obFrom2DAr
 const readContent    = u.readContent
 const readTemplates  = u.readTemplates
 const shallowCombine = u.shallowCombine
@@ -67,10 +68,10 @@ module.exports = class Jamb {
   * main() {
     const pages = yield this.pages(this._paths.pages)
     const posts = yield this.posts(this._paths.posts)
-    console.log(posts)
     const content = flatAr([pages, posts])
 
-    const templateContent = groupByTemplate(content)
+    const templateContent = arToOb('template')(content)
+    console.log(templateContent)
     const templates = yield this.templates(this._paths.templates)
 
     const html = render(this._needPosts)(templateContent, posts, templates)
@@ -103,7 +104,7 @@ module.exports = class Jamb {
   * templates(glob) {
     return P.resolve(yield readTemplates(glob))
       .map(compile(this._opts.jade))
-      .map(arToOb)
+      .map(obFrom2DAr)
       .reduce(flatOb)
   }
 }
