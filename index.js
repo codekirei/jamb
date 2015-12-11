@@ -67,6 +67,7 @@ module.exports = class Jamb {
   * main() {
     const pages = yield this.pages(this._paths.pages)
     const posts = yield this.posts(this._paths.posts)
+    console.log(posts)
     const content = flatAr([pages, posts])
 
     const templateContent = groupByTemplate(content)
