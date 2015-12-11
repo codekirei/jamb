@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "",
-    "dev": "find index.js test/*.js | entr -c node test/test.js"
+    "dev": "node bin/watch"
   },
   "author": "Jacob Blakely (codekirei)",
   "license": "MIT",
@@ -17,9 +17,11 @@
     "jade": "^1.11.0",
     "js-yaml": "^3.4.6",
     "markdown-it": "^5.0.2",
-    "markdown-it-highlightjs": "^2.0.0"
+    "markdown-it-highlightjs": "^2.0.0",
+    "sitemap": "^1.4.1"
   },
   "devDependencies": {
-    "nodemon": "^1.8.1"
+    "chokidar": "^1.4.1",
+    "clor": "^2.0.2"
   }
 }

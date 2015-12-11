@@ -3,17 +3,24 @@
 //----------------------------------------------------------
 // modules
 //----------------------------------------------------------
+// node
+const p = require('path')
+
 // npm
 const P = require('bluebird')
 const co = require('co')
 
 // local
 const u = require('./lib/utils')
-const binaryArrToObj = u.binaryArrToObj
+const arToOb         = u.arToOb
 const errHandler     = u.errHandler
+const flatAr         = u.flatAr
+const flatOb         = u.flatOb
+const genSitemap     = u.genSitemap
 const readContent    = u.readContent
 const readTemplates  = u.readTemplates
-const shallowMerge   = u.shallowMerge
+const shallowCombine = u.shallowCombine
+const write          = u.write
 const writeObj       = u.writeObj
 const x = require('./lib/transformers')
 const compile         = x.compile
@@ -36,6 +43,7 @@ module.exports = class Jamb {
     this._defaultTemplate = 'page'
     this._dist = cfg.dist
     this._needPosts = ['index']
+    this._hostname = 'http://example.com'
     this._wpm = 225
     this._paths =
       { pages: cfg.pages
@@ -59,18 +67,20 @@ module.exports = class Jamb {
   * main() {
     const pages = yield this.pages(this._paths.pages)
     const posts = yield this.posts(this._paths.posts)
-    const content = shallowMerge(
-      groupByTemplate(pages),
-      groupByTemplate(posts)
-    )
+    const content = flatAr([pages, posts])
 
+    const templateContent = groupByTemplate(content)
     const templates = yield this.templates(this._paths.templates)
+    console.log(templates)
 
-    const html = render(this._needPosts)(content, posts, templates)
-
+    const html = render(this._needPosts)(templateContent, posts, templates)
     yield writeObj(html)
 
-    return Object.keys(html)
+    const sitemap = genSitemap(content, this._hostname)
+    const sitemapPath = p.join(this._paths.dist, 'sitemap.xml')
+    yield write(sitemapPath, sitemap)
+
+    return flatAr([Object.keys(html), [sitemapPath]])
   }
 
   // TODO - JSDOC
@@ -93,6 +103,7 @@ module.exports = class Jamb {
   * templates(glob) {
     return P.resolve(yield readTemplates(glob))
       .map(compile(this._opts.jade))
-      .reduce(binaryArrToObj, {})
+      .map(arToOb)
+      .reduce(flatOb)
   }
 }
