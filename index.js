@@ -25,12 +25,12 @@ const shallowCombine = u.shallowCombine
 const write          = u.write
 const writeObj       = u.writeObj
 const x = require('./lib/transformers')
+const addPaths        = x.addPaths
 const compile         = x.compile
 const defaultTemplate = x.defaultTemplate
 const ert             = x.ert
 const groupByTemplate = x.groupByTemplate
 const markdown        = x.markdown
-const outPath         = x.outPath
 const preview         = x.preview
 const render          = x.render
 
@@ -91,7 +91,7 @@ module.exports = class Jamb {
       .map(preview(this._previewDelim))
       .map(markdown)
       .map(defaultTemplate(this._defaultTemplate))
-      .map(outPath(this._paths.dist))
+      .map(addPaths(this._paths.dist))
   }
 
   // TODO - jsdoc
