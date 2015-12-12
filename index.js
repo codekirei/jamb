@@ -13,7 +13,6 @@ const fm = require('yaml-fm')
 
 // local
 const u = require('./lib/utils')
-const arToOb = u.arToOb
 const errHandler     = u.errHandler
 const flatAr         = u.flatAr
 const flatOb         = u.flatOb
@@ -21,17 +20,15 @@ const genSitemap     = u.genSitemap
 const obFrom2DAr     = u.obFrom2DAr
 const readContent    = u.readContent
 const readTemplates  = u.readTemplates
-const shallowCombine = u.shallowCombine
 const write          = u.write
-const writeObj       = u.writeObj
+const write2D        = u.write2D
 const x = require('./lib/transformers')
 const addPaths        = x.addPaths
 const compile         = x.compile
 const defaultTemplate = x.defaultTemplate
 const ert             = x.ert
-const groupByTemplate = x.groupByTemplate
 const markdown        = x.markdown
-const preview         = x.preview
+const splitPreview    = x.splitPreview
 const render          = x.render
 
 //----------------------------------------------------------
@@ -69,26 +66,24 @@ module.exports = class Jamb {
     const pages = yield this.pages(this._paths.pages)
     const posts = yield this.posts(this._paths.posts)
     const content = flatAr([pages, posts])
-    console.log(content)
 
-    const templateContent = arToOb('template')(content)
     const templates = yield this.templates(this._paths.templates)
 
-    const html = render(this._needPosts)(templateContent, posts, templates)
-    yield writeObj(html)
+    const html = render(this._needPosts)(content, posts, templates)
+    yield write2D(html)
 
     const sitemapPath = p.join(this._paths.dist, 'sitemap.xml')
     const sitemap = genSitemap(content, this._hostname)
     yield write(sitemapPath, sitemap)
 
-    return flatAr([Object.keys(html), [sitemapPath]])
+    return flatAr([html.map(_ => _[0]), [sitemapPath]])
   }
 
   // TODO - JSDOC
   * pages(glob) {
     return P.resolve(yield readContent(glob))
       .map(fm(this._yamlDelim))
-      .map(preview(this._previewDelim))
+      .map(splitPreview(this._previewDelim))
       .map(markdown)
       .map(defaultTemplate(this._defaultTemplate))
       .map(addPaths(this._paths.dist))

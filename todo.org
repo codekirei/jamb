@@ -1,6 +1,5 @@
 - [X] change syntax of util imports in transforms file
 - [X] sitemap.js
-- [ ] optimize templates read to templates used (filter)
 - [ ] docstrings
 - [ ] configuration
 
