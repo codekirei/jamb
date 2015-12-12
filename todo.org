@@ -14,8 +14,8 @@
     - [X] flatOb
     - [X] obToAr
     - [X] flatAr
-    - [ ] bufTransform
-    - [ ] read
+    - [X] bufTransform
+    - [X] read
     - [ ] readContent
     - [ ] readTemplates
     - [ ] write
