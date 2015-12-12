@@ -10,8 +10,10 @@ const p = require('path')
 const P = require('bluebird')
 const co = require('co')
 const fm = require('yaml-fm')
+const merge = require('lodash.merge')
 
 // local
+const defaults = require('./lib/defaults')
 const u = require('./lib/utils')
 const errHandler     = u.errHandler
 const flatAr         = u.flatAr
@@ -36,44 +38,26 @@ const render          = x.render
 // logic
 //----------------------------------------------------------
 module.exports = class Jamb {
-  constructor(cfg) {
-    this._previewDelim = '--MORE--'
-    this._yamlDelim = '---'
-    this._defaultTemplate = 'page'
-    this._dist = cfg.dist
-    this._needPosts = ['index']
-    this._hostname = 'http://example.com'
-    this._wpm = 225
-    this._paths =
-      { pages: cfg.pages
-      , posts: cfg.posts
-      , templates: cfg.templates
-      , dist: cfg.dist
-      }
-    this._opts =
-      { jade:
-        { basedir: './test/fixtures/templates'
-        , pretty: true
-        }
-        // TODO globby opts?
-        // TODO markdown-it opts?
-      }
+  constructor(customOpts) {
+    const opts = merge({}, defaults, customOpts)
+    Object.keys(opts).map(k => this[k] = opts[k])
 
     return co(() => this.main()).catch(errHandler)
   }
 
   // TODO - JSDOC
   * main() {
-    const pages = yield this.pages(this._paths.pages)
-    const posts = yield this.posts(this._paths.posts)
-    const content = flatAr([pages, posts])
-    const contentWithPostData = addPostData(this._needPosts, content, posts)
+    const pages = yield this.pages(this.paths.pages)
+    const posts = yield this.posts(this.paths.posts)
 
-    const templates = yield this.templates(this._paths.templates)
+    const content = flatAr([pages, posts])
+    const contentWithPostData = addPostData(this.needPosts, content, posts)
+
+    const templates = yield this.templates(this.paths.templates)
     const html = render(contentWithPostData, templates)
 
-    const sitemapPath = p.join(this._paths.dist, 'sitemap.xml')
-    const sitemap = genSitemap(content, this._hostname)
+    const sitemapPath = p.join(this.paths.dist, 'sitemap.xml')
+    const sitemap = genSitemap(content, this.hostname)
 
     yield write2D(html)
     yield write(sitemapPath, sitemap)
@@ -84,23 +68,23 @@ module.exports = class Jamb {
   // TODO - JSDOC
   * pages(glob) {
     return P.resolve(yield readContent(glob))
-      .map(fm(this._yamlDelim))
-      .map(splitPreview(this._previewDelim))
+      .map(fm(this.delims.yaml))
+      .map(splitPreview(this.delims.preview))
       .map(markdown)
-      .map(defaultTemplate(this._defaultTemplate))
-      .map(addPaths(this._paths.dist))
+      .map(defaultTemplate(this.defaultTemplate))
+      .map(addPaths(this.paths.dist))
   }
 
   // TODO - jsdoc
   * posts(glob) {
     return P.resolve(yield this.pages(glob))
-      .map(ert(this._wpm))
+      .map(ert(this.wpm))
   }
 
   // TODO jsdoc
   * templates(glob) {
     return P.resolve(yield readTemplates(glob))
-      .map(compile(this._opts.jade))
+      .map(compile(this.opts.jade))
       .map(obFrom2DAr)
       .reduce(flatOb)
   }

@@ -1,9 +1,9 @@
 - [X] change syntax of util imports in transforms file
 - [X] sitemap.js
 - [X] split "need" logic into separate fn
-- [ ] check object.assigns for unintended mutation
+- [X] configuration
 - [ ] docstrings
-- [ ] configuration
+- [ ] check object.assigns for unintended mutation
 
 - [ ] test (ava)
 - [ ] travis + coveralls
@@ -15,3 +15,4 @@
 - [ ] searchable archive page / tags page
 - [ ] add rss feed
 - [ ] make bin/watch its own repo (hari)
+- [ ] maybe add configurable markdown-it / globby opts?
