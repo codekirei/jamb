@@ -38,10 +38,9 @@ const render          = x.render
 // logic
 //----------------------------------------------------------
 module.exports = class Jamb {
-  constructor(customOpts) {
-    const opts = merge({}, defaults, customOpts)
+  constructor(custom) {
+    const opts = merge({}, defaults, custom)
     Object.keys(opts).map(k => this[k] = opts[k])
-
     return co(() => this.main()).catch(errHandler)
   }
 

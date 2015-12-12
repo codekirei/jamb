@@ -2,7 +2,38 @@
 - [X] sitemap.js
 - [X] split "need" logic into separate fn
 - [X] configuration
-- [ ] docstrings
+- [-] docstrings
+  - [ ] index
+    - [ ] main
+    - [ ] pages
+    - [ ] posts
+    - [ ] templates
+  - [-] utils
+    - [X] arsTo2DAr
+    - [X] obFrom2DAr
+    - [X] flatOb
+    - [X] obToAr
+    - [X] flatAr
+    - [ ] bufTransform
+    - [ ] read
+    - [ ] readContent
+    - [ ] readTemplates
+    - [ ] write
+    - [ ] write2D
+    - [ ] genSitemap
+    - [ ] errHandler
+  - [ ] transforms
+    - [ ] defaultTemplate
+    - [ ] addPostData
+    - [ ] markdown
+    - [ ] ertCalc
+    - [ ] ert
+    - [ ] urlToPath
+    - [ ] addPaths
+    - [ ] assignSplits
+    - [ ] splitPreview
+    - [ ] compile
+    - [ ] render
 - [ ] check object.assigns for unintended mutation
 
 - [ ] test (ava)
