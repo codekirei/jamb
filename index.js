@@ -24,6 +24,7 @@ const write          = u.write
 const write2D        = u.write2D
 const x = require('./lib/transformers')
 const addPaths        = x.addPaths
+const addPostData     = x.addPostData
 const compile         = x.compile
 const defaultTemplate = x.defaultTemplate
 const ert             = x.ert
@@ -66,14 +67,15 @@ module.exports = class Jamb {
     const pages = yield this.pages(this._paths.pages)
     const posts = yield this.posts(this._paths.posts)
     const content = flatAr([pages, posts])
+    const contentWithPostData = addPostData(this._needPosts, content, posts)
 
     const templates = yield this.templates(this._paths.templates)
-
-    const html = render(this._needPosts)(content, posts, templates)
-    yield write2D(html)
+    const html = render(contentWithPostData, templates)
 
     const sitemapPath = p.join(this._paths.dist, 'sitemap.xml')
     const sitemap = genSitemap(content, this._hostname)
+
+    yield write2D(html)
     yield write(sitemapPath, sitemap)
 
     return flatAr([html.map(_ => _[0]), [sitemapPath]])

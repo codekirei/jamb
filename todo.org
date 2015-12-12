@@ -1,5 +1,7 @@
 - [X] change syntax of util imports in transforms file
 - [X] sitemap.js
+- [X] split "need" logic into separate fn
+- [ ] check object.assigns for unintended mutation
 - [ ] docstrings
 - [ ] configuration
 
