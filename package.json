@@ -15,10 +15,10 @@
     "fs-extra": "^0.26.2",
     "globby": "^4.0.0",
     "jade": "^1.11.0",
-    "js-yaml": "^3.4.6",
     "markdown-it": "^5.0.2",
     "markdown-it-highlightjs": "^2.0.0",
-    "sitemap": "^1.4.1"
+    "sitemap": "^1.4.1",
+    "yaml-fm": "^0.1.1"
   },
   "devDependencies": {
     "chokidar": "^1.4.1",

@@ -9,6 +9,7 @@ const p = require('path')
 // npm
 const P = require('bluebird')
 const co = require('co')
+const fm = require('yaml-fm')
 
 // local
 const u = require('./lib/utils')
@@ -27,7 +28,6 @@ const x = require('./lib/transformers')
 const compile         = x.compile
 const defaultTemplate = x.defaultTemplate
 const ert             = x.ert
-const frontmatter     = x.frontmatter
 const groupByTemplate = x.groupByTemplate
 const markdown        = x.markdown
 const outPath         = x.outPath
@@ -69,9 +69,9 @@ module.exports = class Jamb {
     const pages = yield this.pages(this._paths.pages)
     const posts = yield this.posts(this._paths.posts)
     const content = flatAr([pages, posts])
+    console.log(content)
 
     const templateContent = arToOb('template')(content)
-    console.log(templateContent)
     const templates = yield this.templates(this._paths.templates)
 
     const html = render(this._needPosts)(templateContent, posts, templates)
@@ -87,7 +87,7 @@ module.exports = class Jamb {
   // TODO - JSDOC
   * pages(glob) {
     return P.resolve(yield readContent(glob))
-      .map(frontmatter(this._yamlDelim))
+      .map(fm(this._yamlDelim))
       .map(preview(this._previewDelim))
       .map(markdown)
       .map(defaultTemplate(this._defaultTemplate))

@@ -18,6 +18,9 @@ const clear = () => spawn('clear').stdout.on('data', log)
 const scale = num => num > 12 ? num - 12 : num
 const prepend = num => num.length === 1 ? `0${num}` : num
 
+// TODO add duration/elapsed field
+// TODO cooler header box (see multispinner example)
+
 function time() {
   const now = new Date()
   const h = scale(now.getHours())

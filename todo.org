@@ -13,3 +13,4 @@
 * Later
 - [ ] searchable archive page / tags page
 - [ ] add rss feed
+- [ ] make bin/watch its own repo (hari)
