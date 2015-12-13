@@ -16,8 +16,8 @@
     - [X] flatAr
     - [X] bufTransform
     - [X] read
-    - [ ] readContent
-    - [ ] readTemplates
+    - [X] readContent
+    - [X] readTemplates
     - [ ] write
     - [ ] write2D
     - [ ] genSitemap
