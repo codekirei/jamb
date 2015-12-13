@@ -22,12 +22,12 @@
     - [X] write2D
     - [X] genSitemap
     - [X] errHandler
-  - [ ] transforms
-    - [ ] defaultTemplate
-    - [ ] addPostData
-    - [ ] markdown
-    - [ ] ertCalc
-    - [ ] ert
+  - [-] transforms
+    - [X] defaultTemplate
+    - [X] addPostData
+    - [X] markdown
+    - [X] ertCalc
+    - [X] ert
     - [ ] urlToPath
     - [ ] addPaths
     - [ ] assignSplits

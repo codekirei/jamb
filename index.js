@@ -26,10 +26,10 @@ const write          = u.write
 const write2D        = u.write2D
 const x = require('./lib/transformers')
 const addPaths        = x.addPaths
-const addPostData     = x.addPostData
 const compile         = x.compile
 const defaultTemplate = x.defaultTemplate
 const ert             = x.ert
+const injectPostData  = x.injectPostData
 const markdown        = x.markdown
 const splitPreview    = x.splitPreview
 const render          = x.render
@@ -50,10 +50,10 @@ module.exports = class Jamb {
     const posts = yield this.posts(this.paths.posts)
 
     const content = flatAr([pages, posts])
-    const contentWithPostData = addPostData(this.needPosts, content, posts)
+    const injectedContent = injectPostData(this.needPosts, content, posts)
 
     const templates = yield this.templates(this.paths.templates)
-    const html = render(contentWithPostData, templates)
+    const html = render(injectedContent, templates)
 
     const sitemapPath = p.join(this.paths.dist, 'sitemap.xml')
     const sitemap = genSitemap(content, this.hostname)
