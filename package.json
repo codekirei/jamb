@@ -4,7 +4,7 @@
   "description": "jade and markdown blog",
   "main": "index.js",
   "scripts": {
-    "test": "",
+    "test": "ava",
     "dev": "node bin/watch"
   },
   "author": "Jacob Blakely (codekirei)",

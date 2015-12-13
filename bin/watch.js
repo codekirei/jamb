@@ -36,14 +36,12 @@ function header(ct) {
     .blue(delim).line
     .blue(bars).blue(`Time: ${time()}`).line
     .blue(bars).blue(`Count: ${ct}`).line
-    .blue(delim).line.log()
+    .blue(delim).log()
 }
 
 function run() {
   header(count)
-  const script = spawn('node', ['./test/test.js'])
-  script.stdout.on('data', log)
-  script.stderr.on('data', log)
+  const script = spawn('ava', {stdio: 'inherit'})
 }
 
 function debounce() {
