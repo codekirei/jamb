@@ -10,19 +10,19 @@
     - [X] flatAr
     - [X] flatOb
     - [ ] genSitemap
-    - [X] read
+    - [ ] read
     - [ ] readContent
     - [ ] readTemplates
     - [ ] write
     - [ ] write2D
-  - [ ] transforms
-    - [ ] addOutPath
-    - [ ] addSitemapUrl
-    - [ ] assignSplits
-    - [ ] compile
-    - [ ] defaultTemplate
-    - [ ] ert
-    - [ ] ertCalc
+  - [-] transforms
+    - [X] addOutPath
+    - [X] addSitemapUrl
+    - [X] assignSplits
+    - [X] compile
+    - [X] defaultTemplate
+    - [X] ert
+    - [X] ertCalc
     - [ ] injectPostData
     - [ ] markdown
     - [ ] render

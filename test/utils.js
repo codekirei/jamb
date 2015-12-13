@@ -1,6 +1,7 @@
 import t from 'ava'
 import s from 'sinon'
 import f from 'faker'
+import p from 'path'
 import fs from 'fs-extra'
 import { arsTo2DAr
        , arToOb
@@ -30,13 +31,9 @@ t('bufTransform', _ => {
   const str = f.fake('{{lorem.paragraph}}')
   const ob = {content: new Buffer(str)}
   const stub = s.stub().returns(`${str}123\n`)
-
   bufTransform(ob, stub)
-
   _.true(stub.calledOnce)
-
   _.true(stub.calledWith(str))
-
   _.same(
     ob
     , {content: new Buffer(`${str}123`)}
@@ -61,12 +58,15 @@ t('flatOb', _ => _.same(
   , {foo: ['a', 1], bar: ['b', 2]}
 ))
 
-t('read', async _ => {
+t.skip('read', async _ => {
+  // use mock-fs
   const spy = s.spy(fs, 'readFile')
-
   await read(__filename)
-
   _.true(spy.calledOnce, 'called')
-
   _.true(spy.calledWith(__filename, 'utf8'), 'called with')
 })
+
+t.skip('readContent', async _ => {
+  // use mock-fs
+})
+
