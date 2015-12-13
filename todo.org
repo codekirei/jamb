@@ -18,8 +18,8 @@
     - [X] read
     - [X] readContent
     - [X] readTemplates
-    - [ ] write
-    - [ ] write2D
+    - [X] write
+    - [X] write2D
     - [ ] genSitemap
     - [ ] errHandler
   - [ ] transforms
