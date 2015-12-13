@@ -19,7 +19,7 @@ const errHandler     = u.errHandler
 const flatAr         = u.flatAr
 const flatOb         = u.flatOb
 const genSitemap     = u.genSitemap
-const obFrom2DAr     = u.obFrom2DAr
+const arToOb     = u.arToOb
 const readContent    = u.readContent
 const readTemplates  = u.readTemplates
 const write          = u.write
@@ -84,7 +84,7 @@ module.exports = class Jamb {
   * templates(glob) {
     return P.resolve(yield readTemplates(glob))
       .map(compile(this.opts.jade))
-      .map(obFrom2DAr)
+      .map(arToOb)
       .reduce(flatOb)
   }
 }

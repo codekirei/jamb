@@ -8,7 +8,7 @@
     - [ ] pages
     - [ ] posts
     - [ ] templates
-  - [-] utils
+  - [X] utils
     - [X] arsTo2DAr
     - [X] obFrom2DAr
     - [X] flatOb
@@ -20,8 +20,8 @@
     - [X] readTemplates
     - [X] write
     - [X] write2D
-    - [ ] genSitemap
-    - [ ] errHandler
+    - [X] genSitemap
+    - [X] errHandler
   - [ ] transforms
     - [ ] defaultTemplate
     - [ ] addPostData
