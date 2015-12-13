@@ -45,7 +45,14 @@ module.exports = class Jamb {
     return co(() => this.main()).catch(errHandler)
   }
 
-  // TODO - JSDOC
+  /**
+    Main logic loop:
+      - call and parse methods (pages/posts/templates)
+      - generate sitemap
+      - write output
+
+    @returns {String[]} array of all paths written to
+   */
   * main() {
     const pages = yield this.pages(this.paths.pages)
     const posts = yield this.posts(this.paths.posts)
@@ -65,7 +72,12 @@ module.exports = class Jamb {
     return flatAr([html.map(_ => _[0]), [sitemapPath]])
   }
 
-  // TODO - JSDOC
+  /**
+    Read and parse page content.
+
+    @param {String|String[]} glob - glob of paths to page content
+    @returns {Object[]} array of page data objects
+   */
   * pages(glob) {
     return P.resolve(yield readContent(glob))
       .map(fm(this.delims.yaml))
@@ -76,13 +88,23 @@ module.exports = class Jamb {
       .map(addOutPath(this.paths.dist))
   }
 
-  // TODO - jsdoc
+  /**
+    Read and parse post content.
+
+    @param {String|String[]} glob - glob of paths to post content
+    @returns {Object[]} array of post data objects
+   */
   * posts(glob) {
     return P.resolve(yield this.pages(glob))
       .map(ert(this.wpm))
   }
 
-  // TODO jsdoc
+  /**
+    Read and compile templates.
+
+    @param {String|String[]} glob - glob of paths to templates
+    @returns {Object} templates: {foo: renderFn, bar: renderFn}
+   */
   * templates(glob) {
     return P.resolve(yield readTemplates(glob))
       .map(compile(this.opts.jade))
