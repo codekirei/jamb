@@ -7,7 +7,7 @@
 - [ ] NPM
 
 * Later
-- [ ] searchable archive page / tags page
+- [ ] searchable archive page / tags page(s)
 - [ ] add rss feed
 - [ ] make bin/watch its own repo (hari)
 - [ ] maybe add configurable markdown-it / globby opts?
