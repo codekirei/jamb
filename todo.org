@@ -22,7 +22,7 @@
     - [X] write2D
     - [X] genSitemap
     - [X] errHandler
-  - [-] transforms
+  - [X] transforms
     - [X] defaultTemplate
     - [X] addPostData
     - [X] markdown
@@ -33,8 +33,8 @@
     - [X] addPaths
     - [X] assignSplits
     - [X] splitPreview
-    - [ ] compile
-    - [ ] render
+    - [X] compile
+    - [X] render
 - [ ] check object.assigns for unintended mutation
 
 - [ ] test (ava)
