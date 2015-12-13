@@ -28,10 +28,11 @@
     - [X] markdown
     - [X] ertCalc
     - [X] ert
-    - [ ] urlToPath
-    - [ ] addPaths
-    - [ ] assignSplits
-    - [ ] splitPreview
+    - [X] urlToPath
+    - [X] addSitemapUrl
+    - [X] addPaths
+    - [X] assignSplits
+    - [X] splitPreview
     - [ ] compile
     - [ ] render
 - [ ] check object.assigns for unintended mutation

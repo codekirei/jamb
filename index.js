@@ -25,7 +25,8 @@ const readTemplates  = u.readTemplates
 const write          = u.write
 const write2D        = u.write2D
 const x = require('./lib/transformers')
-const addPaths        = x.addPaths
+const addOutPath      = x.addOutPath
+const addSitemapUrl   = x.addSitemapUrl
 const compile         = x.compile
 const defaultTemplate = x.defaultTemplate
 const ert             = x.ert
@@ -71,7 +72,8 @@ module.exports = class Jamb {
       .map(splitPreview(this.delims.preview))
       .map(markdown)
       .map(defaultTemplate(this.defaultTemplate))
-      .map(addPaths(this.paths.dist))
+      .map(addSitemapUrl)
+      .map(addOutPath(this.paths.dist))
   }
 
   // TODO - jsdoc
