@@ -1,8 +1,43 @@
 - [ ] check object.assigns for unintended mutation
+- [ ] swap out sitemap code with diy; only needs loc for all and lastmod for posts
 
-- [ ] test (ava)
+- [-] test (ava)
+  - [-] utils
+    - [X] arsTo2DAr
+    - [X] arToOb
+    - [X] bufTransform
+    - [X] errHandler
+    - [X] flatAr
+    - [X] flatOb
+    - [ ] genSitemap
+    - [X] read
+    - [ ] readContent
+    - [ ] readTemplates
+    - [ ] write
+    - [ ] write2D
+  - [ ] transforms
+    - [ ] addOutPath
+    - [ ] addSitemapUrl
+    - [ ] assignSplits
+    - [ ] compile
+    - [ ] defaultTemplate
+    - [ ] ert
+    - [ ] ertCalc
+    - [ ] injectPostData
+    - [ ] markdown
+    - [ ] render
+    - [ ] splitPreview
+    - [ ] urlToPath
+  - [ ] main
+    - [ ] cfg
+    - [ ] loop
+    - [ ] err
+    - [ ] sitemap
+    - [ ] pages
+    - [ ] posts
+    - [ ] templates
+
 - [ ] travis + coveralls
-
 - [ ] readme
 - [ ] NPM
 

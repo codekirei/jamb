@@ -1,6 +1,7 @@
 import t from 'ava'
 import s from 'sinon'
 import f from 'faker'
+import fs from 'fs-extra'
 import { arsTo2DAr
        , arToOb
        , bufTransform
@@ -40,4 +41,32 @@ t('bufTransform', _ => {
     ob
     , {content: new Buffer(`${str}123`)}
   )
+})
+
+t('errHandler', _ => {
+  const err = new Error()
+  const stub = s.stub(console, 'log')
+  _.throws(() => errHandler(err))
+  _.true(stub.called)
+  stub.restore()
+})
+
+t('flatAr', _ => _.same(
+  flatAr([[1, 2], [3, 4]])
+  , [1, 2, 3, 4]
+))
+
+t('flatOb', _ => _.same(
+  [{foo: ['a', 1]}, {bar: ['b', 2]}].reduce(flatOb)
+  , {foo: ['a', 1], bar: ['b', 2]}
+))
+
+t('read', async _ => {
+  const spy = s.spy(fs, 'readFile')
+
+  await read(__filename)
+
+  _.true(spy.calledOnce, 'called')
+
+  _.true(spy.calledWith(__filename, 'utf8'), 'called with')
 })
