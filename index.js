@@ -15,15 +15,14 @@ const merge = require('lodash.merge')
 // local
 const defaults = require('./lib/defaults')
 const u = require('./lib/utils')
-const errHandler     = u.errHandler
-const flatAr         = u.flatAr
-const flatOb         = u.flatOb
-const genSitemap     = u.genSitemap
-const arToOb     = u.arToOb
-const readContent    = u.readContent
-const readTemplates  = u.readTemplates
-const write          = u.write
-const write2D        = u.write2D
+const errHandler    = u.errHandler
+const flatAr        = u.flatAr
+const flatOb        = u.flatOb
+const arToOb        = u.arToOb
+const readContent   = u.readContent
+const readTemplates = u.readTemplates
+const write         = u.write
+const write2D       = u.write2D
 const x = require('./lib/transformers')
 const addOutPath      = x.addOutPath
 const addSitemapUrl   = x.addSitemapUrl
@@ -47,8 +46,8 @@ module.exports = class Jamb {
 
   /**
     Main logic loop:
-      - call and parse methods (pages/posts/templates)
-      - generate sitemap
+      - call methods (pages/posts/templates)
+      - render content
       - write output
 
     @returns {String[]} array of all paths written to
@@ -63,13 +62,9 @@ module.exports = class Jamb {
     const templates = yield this.templates(this.paths.templates)
     const html = render(injectedContent, templates)
 
-    const sitemapPath = p.join(this.paths.dist, 'sitemap.xml')
-    const sitemap = genSitemap(content, this.hostname)
-
     yield write2D(html)
-    yield write(sitemapPath, sitemap)
 
-    return flatAr([html.map(_ => _[0]), [sitemapPath]])
+    return html.map(_ => _[0])
   }
 
   /**

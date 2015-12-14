@@ -1,6 +1,16 @@
+- [ ] add globals to content
+  - [ ] navLinks
+    - [ ] url
+    - [ ] text
+  - [ ] author
+      - [ ] url
+      - [ ] name
+- [ ] change sitemapurl to canonical
+- [ ] figure out post time/date frontmatter
+
 - [ ] check object.assigns for unintended mutation
-- [ ] swap out sitemap code with diy; only needs <loc> for all and <lastmod> for
-      posts (static-sitemap)
+- [ ] add diy sitemap with <loc> for every page and <lastmod> for every post
+  - [ ] create module called static-sitemap
 
 - [-] test suite (ava)
   - [-] utils

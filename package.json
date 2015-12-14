@@ -21,7 +21,6 @@
     "lodash.merge": "^3.3.2",
     "markdown-it": "^5.0.2",
     "markdown-it-highlightjs": "^2.0.0",
-    "sitemap": "^1.4.1",
     "yaml-fm": "^0.1.1"
   },
   "devDependencies": {

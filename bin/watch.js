@@ -41,7 +41,8 @@ function header(ct) {
 
 function run() {
   header(count)
-  const script = spawn('ava', {stdio: 'inherit'})
+  // const script = spawn('ava', {stdio: 'inherit'})
+  spawn('node', ['_old_test/test.js'], {stdio: 'inherit'})
 }
 
 function debounce() {
@@ -56,5 +57,6 @@ function debounce() {
 chokidar.watch([
   'index.js',
   'test/**/*.js',
-  'lib/**/*.js'
+  'lib/**/*.js',
+  '_old_test/**/*.js'
 ]).on('all', debounce)
