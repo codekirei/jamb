@@ -1,5 +1,6 @@
 # `jamb`
 
+[![NPM Version][versionBadge]][version]
 [![Build Status][travisBadge]][travis]
 [![Coverage Status][coverallsBadge]][coveralls]
 [![MIT License][licenseBadge]][license]
@@ -17,9 +18,11 @@ This gives you the freedom to manage your scripts, styles, and assets as you see
 
 Finished test suite, comprehensive documentation, and additional features coming soon<sup>TM</sup>.
 
+[versionBadge]: https://img.shields.io/npm/v/jamb.svg?style=flat-square
 [travisBadge]: https://img.shields.io/travis/codekirei/jamb.svg?style=flat-square
 [coverallsBadge]: https://img.shields.io/coveralls/codekirei/jamb.svg?style=flat-square
 [licenseBadge]: https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square
+[version]: https://www.npmjs.com/package/jamb
 [travis]: https://travis-ci.org/codekirei/jamb
 [coveralls]: https://coveralls.io/github/codekirei/jamb?branch=master
 [license]: https://github.com/codekirei/jamb/blob/master/license
