@@ -1,8 +1,8 @@
 - [ ] check object.assigns for unintended mutation
-- [ ] swap out sitemap code with diy; only needs loc for all and lastmod for
+- [ ] swap out sitemap code with diy; only needs <loc> for all and <lastmod> for
       posts (static-sitemap)
 
-- [-] test (ava)
+- [-] test suite (ava)
   - [-] utils
     - [X] arsTo2DAr
     - [X] arToOb
@@ -39,8 +39,6 @@
     - [ ] templates
 
 - [ ] readme
-- [ ] travis + coveralls
-- [ ] NPM
 
 * Later
 - [ ] searchable archive page / tags page(s)

@@ -5,6 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "ava",
+    "test-ci": "nyc ava -reporter=lcovonly",
+    "cover": "nyc ava",
     "dev": "node bin/watch",
     "md": "pm2 start pen"
   },
