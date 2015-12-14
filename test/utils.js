@@ -3,6 +3,7 @@ import s from 'sinon'
 import f from 'faker'
 import p from 'path'
 import fs from 'fs-extra'
+
 import { arsTo2DAr
        , arToOb
        , bufTransform

@@ -45,11 +45,13 @@ t('assignSplits', _ => {
   assignSplits(strs, ob)
   _.same(
     ob.preview
-    , new Buffer('foo', 'utf8'), 'preview'
+    , new Buffer('foo', 'utf8')
+    , 'preview'
   )
   _.same(
     ob.content
-    , new Buffer('bar', 'utf8'), 'content'
+    , new Buffer('bar', 'utf8')
+    , 'content'
   )
 })
 
@@ -58,9 +60,9 @@ t('compile', _ => {
   const opts = {pretty: true}
   const template = ['foo/bar/index.jade', '<div>hello world</div>']
   const res = compile(opts)(template)
+  _.is(res[0], 'index', 'basename')
   _.true(spy.calledOnce, 'called')
   _.true(spy.calledWith(template[1], opts), 'called with')
-  _.is(res[0], 'index', 'basename')
 })
 
 t('defaultTemplate', _ => {
@@ -68,8 +70,8 @@ t('defaultTemplate', _ => {
   const has = {template: 'blog'}
   const needs = {};
   [has, needs].map(defaultTemplate(def))
-  _.is(has.template, 'blog', 'does nothing when not needed')
-  _.is(needs.template, 'index', 'assigns default when needed')
+  _.is(has.template, 'blog', 'does nothing')
+  _.is(needs.template, 'index', 'assigns default')
 })
 
 t('ert', _ => {
@@ -82,6 +84,7 @@ t('ert', _ => {
 
 t('ertCalc', _ => {
   const wpm = 225
-  const buf = new Buffer('t '.repeat(wpm * 3 - 1), 'utf8')
-  _.is(ertCalc(buf, wpm), 3)
+  const mins = 5
+  const buf = new Buffer('word '.repeat(wpm * mins - 1), 'utf8')
+  _.is(ertCalc(buf, wpm), mins)
 })
