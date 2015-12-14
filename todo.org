@@ -1,10 +1,10 @@
-- [ ] add globals to content
+- [-] add globals to content
   - [ ] navLinks
     - [ ] url
     - [ ] text
-  - [ ] author
-    - [ ] url
-    - [ ] name
+  - [X] author
+    - [X] url
+    - [X] name
 - [X] change sitemapurl to canonical
   - [X] change "url" fm to "slug"
 - [ ] figure out post time/date frontmatter

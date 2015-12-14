@@ -24,6 +24,7 @@ const readTemplates = u.readTemplates
 const write         = u.write
 const write2D       = u.write2D
 const x = require('./lib/transformers')
+const addAuthor       = x. addAuthor
 const addCanonical    = x.addCanonical
 const addPath         = x.addPath
 const compile         = x.compile
@@ -79,6 +80,7 @@ module.exports = class Jamb {
       .map(fm(this.delims.yaml))
       .map(splitPreview(this.delims.preview))
       .map(markdown)
+      .map(addAuthor(this.defaultAuthor))
       .map(defaultTemplate(this.defaultTemplate))
       .map(addCanonical(this.hostname))
       .map(addPath(this.paths.dist))
