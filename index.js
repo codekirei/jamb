@@ -24,8 +24,8 @@ const readTemplates = u.readTemplates
 const write         = u.write
 const write2D       = u.write2D
 const x = require('./lib/transformers')
-const addOutPath      = x.addOutPath
-const addSitemapUrl   = x.addSitemapUrl
+const addCanonical    = x.addCanonical
+const addPath         = x.addPath
 const compile         = x.compile
 const defaultTemplate = x.defaultTemplate
 const ert             = x.ert
@@ -54,6 +54,7 @@ module.exports = class Jamb {
    */
   * main() {
     const pages = yield this.pages(this.paths.pages)
+    console.log(pages)
     const posts = yield this.posts(this.paths.posts)
 
     const content = flatAr([pages, posts])
@@ -79,8 +80,8 @@ module.exports = class Jamb {
       .map(splitPreview(this.delims.preview))
       .map(markdown)
       .map(defaultTemplate(this.defaultTemplate))
-      .map(addSitemapUrl)
-      .map(addOutPath(this.paths.dist))
+      .map(addCanonical(this.hostname))
+      .map(addPath(this.paths.dist))
   }
 
   /**

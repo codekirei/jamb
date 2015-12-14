@@ -4,9 +4,7 @@ import s from 'sinon'
 import f from 'faker'
 import jade from 'jade'
 
-import { addOutPath
-       , addSitemapUrl
-       , assignSplits
+import { assignSplits
        , compile
        , defaultTemplate
        , ert
@@ -18,7 +16,7 @@ import { addOutPath
        , urlToPath
        } from '../lib/transformers'
 
-t('addOutPath', _ => {
+t.skip('addOutPath', _ => {
   const ob = {sitemapUrl: 'foo/bar'}
   const dist = 'a/path'
   addOutPath(dist)(ob)
@@ -28,7 +26,7 @@ t('addOutPath', _ => {
   )
 })
 
-t('addSitemapUrl', _ => {
+t.skip('addSitemapUrl', _ => {
   const ob = {url: 'posts/post1'}
   addSitemapUrl(ob)
   _.ok(ob.sitemapUrl, 'key exists')

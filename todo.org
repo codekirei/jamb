@@ -6,6 +6,7 @@
       - [ ] url
       - [ ] name
 - [ ] change sitemapurl to canonical
+  - [ ] change "url" fm to "slug"
 - [ ] figure out post time/date frontmatter
 
 - [ ] check object.assigns for unintended mutation
