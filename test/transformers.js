@@ -13,7 +13,6 @@ import { assignSplits
        , markdown
        , render
        , splitPreview
-       , urlToPath
        } from '../lib/transformers'
 
 t.skip('addOutPath', _ => {
