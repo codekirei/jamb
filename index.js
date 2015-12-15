@@ -24,11 +24,14 @@ const readTemplates = u.readTemplates
 const write         = u.write
 const write2D       = u.write2D
 const x = require('./lib/transformers')
-const addAuthor       = x. addAuthor
+const addAuthor       = x.addAuthor
 const addCanonical    = x.addCanonical
 const addDate         = x.addDate
+const addDateOb       = x.addDateOb
+const addDateNum      = x.addDateNum
 const addNav          = x.addNav
 const addPath         = x.addPath
+const byReverseDate   = x.byReverseDate
 const compile         = x.compile
 const defaultTemplate = x.defaultTemplate
 const ert             = x.ert
@@ -58,7 +61,6 @@ module.exports = class Jamb {
   * main() {
     const pages = yield this.pages(this.paths.pages)
     const posts = yield this.posts(this.paths.posts)
-    console.log(posts)
 
     const content = flatAr([pages, posts])
     const injectedContent = injectPostData(this.needPosts, content, posts)
@@ -98,7 +100,10 @@ module.exports = class Jamb {
   * posts(glob) {
     return P.resolve(yield this.pages(glob))
       .map(ert(this.wpm))
+      .map(addDateOb)
       .map(addDate)
+      .map(addDateNum)
+      .then(_ => _.sort(byReverseDate))
   }
 
   /**
