@@ -1,6 +1,6 @@
 {
   "name": "jamb",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "jade and markdown blog",
   "main": "index.js",
   "scripts": {
