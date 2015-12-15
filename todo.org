@@ -1,12 +1,3 @@
-- [-] add globals to content
-  - [ ] navLinks
-    - [ ] url
-    - [ ] text
-  - [X] author
-    - [X] url
-    - [X] name
-- [X] change sitemapurl to canonical
-  - [X] change "url" fm to "slug"
 - [ ] figure out post time/date frontmatter
 
 - [ ] check object.assigns for unintended mutation

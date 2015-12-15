@@ -7,7 +7,9 @@
 
 **J**ade **A**nd **M**arkdown **B**log
 
-WIP Node.js static-markup-generator.
+**NOTE** This is still a WIP -- things will change on the way to `1.0`.
+
+Node.js static-markup-generator.
 
 `jamb` is not a static-site-generator in the traditional sense.
 It is only concerned with markup -- specifically jade templates and markdown content with YAML frontmatter.
