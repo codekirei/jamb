@@ -56,7 +56,6 @@ module.exports = class Jamb {
    */
   * main() {
     const pages = yield this.pages(this.paths.pages)
-    console.log(pages)
     const posts = yield this.posts(this.paths.posts)
 
     const content = flatAr([pages, posts])
