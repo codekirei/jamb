@@ -1,5 +1,5 @@
-- [X] figure out post time/date frontmatter
-- [X] sort post data by date
+- [ ] update missing tests for new fns
+- [ ] write missing docstrings for new fns
 
 - [ ] check object.assigns for unintended mutation
 - [ ] add diy sitemap with <loc> for every page and <lastmod> for every post
