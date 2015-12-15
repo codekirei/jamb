@@ -1,4 +1,5 @@
 - [ ] figure out post time/date frontmatter
+- [ ] sort post data by date
 
 - [ ] check object.assigns for unintended mutation
 - [ ] add diy sitemap with <loc> for every page and <lastmod> for every post

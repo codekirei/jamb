@@ -26,6 +26,7 @@ const write2D       = u.write2D
 const x = require('./lib/transformers')
 const addAuthor       = x. addAuthor
 const addCanonical    = x.addCanonical
+const addDate         = x.addDate
 const addNav          = x.addNav
 const addPath         = x.addPath
 const compile         = x.compile
@@ -57,6 +58,7 @@ module.exports = class Jamb {
   * main() {
     const pages = yield this.pages(this.paths.pages)
     const posts = yield this.posts(this.paths.posts)
+    console.log(posts)
 
     const content = flatAr([pages, posts])
     const injectedContent = injectPostData(this.needPosts, content, posts)
@@ -96,6 +98,7 @@ module.exports = class Jamb {
   * posts(glob) {
     return P.resolve(yield this.pages(glob))
       .map(ert(this.wpm))
+      .map(addDate)
   }
 
   /**
