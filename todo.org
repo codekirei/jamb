@@ -1,5 +1,6 @@
 - [ ] update missing tests for new fns
 - [ ] write missing docstrings for new fns
+- [ ] add missing fields to package.json
 
 - [ ] check object.assigns for unintended mutation
 - [ ] add diy sitemap with <loc> for every page and <lastmod> for every post

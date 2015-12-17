@@ -41,8 +41,8 @@ function header(ct) {
 
 function run() {
   header(count)
-  // const script = spawn('ava', {stdio: 'inherit'})
-  spawn('node', ['_old_test/test.js'], {stdio: 'inherit'})
+  const script = spawn('ava', {stdio: 'inherit'})
+  // spawn('node', ['_old_test/test.js'], {stdio: 'inherit'})
 }
 
 function debounce() {

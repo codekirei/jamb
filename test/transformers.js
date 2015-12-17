@@ -4,16 +4,39 @@ import s from 'sinon'
 import f from 'faker'
 import jade from 'jade'
 
-import { assignSplits
+import { addAuthor
+       , addCanonical
+       , addDate
+       , addDateOb
+       , addDateNum
+       , addNav
+       , addPath
+       , assignSplits
+       , byReverseDate
        , compile
        , defaultTemplate
        , ert
        , ertCalc
        , injectPostData
+       , makeCanonical
        , markdown
+       , parseDate
        , render
        , splitPreview
        } from '../lib/transformers'
+
+t('addAuthor', _ => {
+  const ob = {foo: 'bar'}
+  const bob =
+    { name: 'Bob Loblaw'
+    , link: 'http://bobloblawlawblog.com'
+    , email: 'bobloblaw@bobloblawlawblog.com'
+    }
+  _.same(
+    addAuthor(bob)(ob)
+    , {foo: 'bar', author: bob}
+  )
+})
 
 t.skip('addOutPath', _ => {
   const ob = {sitemapUrl: 'foo/bar'}
