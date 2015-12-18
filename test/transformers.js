@@ -47,6 +47,15 @@ t('addCanonical', _ => {
   )
 })
 
+t('addDateOb', _ => {
+  const date = '2015-12-18T13:37-08:00'
+  const ob = {posted: date}
+  _.same(
+    addDateOb(ob).dateOb
+    , new Date(date)
+  )
+})
+
 t.skip('addOutPath', _ => {
   const ob = {sitemapUrl: 'foo/bar'}
   const dist = 'a/path'
