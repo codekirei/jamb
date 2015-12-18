@@ -38,6 +38,15 @@ t('addAuthor', _ => {
   )
 })
 
+t('addCanonical', _ => {
+  const ob = {slug: '/about'}
+  const host = 'http://test.com'
+  _.same(
+    addCanonical(host)(ob).canonical
+    , makeCanonical(host, ob.slug)
+  )
+})
+
 t.skip('addOutPath', _ => {
   const ob = {sitemapUrl: 'foo/bar'}
   const dist = 'a/path'
