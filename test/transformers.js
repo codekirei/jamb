@@ -47,6 +47,15 @@ t('addCanonical', _ => {
   )
 })
 
+t('addDate', _ => {
+  const date = '2015-12-18T13:37-08:00'
+  const ob = {dateOb: new Date(date)}
+  _.same(
+    addDate(ob).date
+    , parseDate(ob.dateOb)
+  )
+})
+
 t('addDateOb', _ => {
   const date = '2015-12-18T13:37-08:00'
   const ob = {posted: date}
